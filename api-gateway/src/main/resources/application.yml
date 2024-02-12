@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+      - id: inventory-service
+        uri: lb://inventory-service
+        predicates:
+        - Path=/api/inventory/**
+
+      - id: orders-service
+        uri: lb://orders-service
+        predicates:
+        - Path=/api/order/**
+
+      - id: products-service
+        uri: lb://products-service
+        predicates:
+        - Path=/api/products/**
+
+      - id: inventory-service-actuator
+        uri: lb://inventory-service/actuator/inventory/**
+        predicates:
+        - Path=/actuator/inventory/**
+
+      - id: orders-service-actuator
+        uri: lb://orders-service/actuator/orders/**
+        predicates:
+        - Path=/actuator/order/**
+
+      - id: products-service-actuator
+        uri: lb://products-service/actuator/products/**
+        predicates:
+        - Path=/actuator/products/**
+        
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+#log
+logging:
+  level:
+    root: info
+    '[org.springframework.cloud.gateway]': trace
+    '[org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator]': info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - health
+      base-path: /actuator
