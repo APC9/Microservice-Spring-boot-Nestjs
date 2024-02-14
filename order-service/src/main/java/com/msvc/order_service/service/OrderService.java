@@ -8,6 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.msvc.order_service.config.rabbitmq.Producer;
 import com.msvc.order_service.events.OrderEvent;
 import com.msvc.order_service.model.dto.BaseResponse;
 import com.msvc.order_service.model.dto.OrderItemRequest;
@@ -32,6 +33,10 @@ public class OrderService {
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
 
+  @Autowired
+  private Producer producer;
+
+
   @SuppressWarnings("null")
   public OrderResponse placedOrder(OrderRequest orderRequest) {
 
@@ -54,11 +59,15 @@ public class OrderService {
       OrderResponse orderResponse = mapToOrderResponse(savedOrder);
       System.out.println(orderResponse);
 
-      //TODO:  Send message to order topic
-
+      //TODO:  Send message with Kafka
       kafkaTemplate.send("orders-topic", JsonUtils.toJson(
         new OrderEvent(savedOrder.getOrderNumber(), orderResponse.orderItems().get(0), OrderStatus.PLACED)
       ));
+
+    //TODO: send message with Rabbitmq
+    producer.send(JsonUtils.toJson(
+      new OrderEvent(savedOrder.getOrderNumber(), orderResponse.orderItems().get(0), OrderStatus.PLACED)
+    ));
 
       return orderResponse;
     }else{

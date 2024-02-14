@@ -1,0 +1,10 @@
+
+server:
+  port: 0
+
+spring:
+  application:
+    name: message-service
+
+rabbitmq.queue.name: cola1
+

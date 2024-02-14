@@ -1,3 +1,4 @@
+
 server:
   port: 0
 
@@ -23,7 +24,13 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
         
-        
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+rabbitmq.queue.name: cola1
 
 eureka:
   client:
